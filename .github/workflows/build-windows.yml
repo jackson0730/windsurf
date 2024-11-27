@@ -22,16 +22,28 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        echo "Current directory:"
+        dir
+        echo "Content of pacman_game directory:"
+        dir pacman_game
+        echo "Content of requirements.txt:"
+        type pacman_game\requirements.txt
         pip install -r pacman_game/requirements.txt
         pip install pyinstaller
         
     - name: Build with PyInstaller
       run: |
         cd pacman_game
-        pyinstaller --onefile --windowed pacman.py
+        echo "Installing pygame with specific version..."
+        pip install pygame==2.5.2
+        echo "Building executable..."
+        pyinstaller --onefile --windowed --log-level DEBUG pacman.py
+        echo "Build complete. Checking dist directory:"
+        dir dist
         
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: pacman-windows
         path: pacman_game/dist/pacman.exe
+        if-no-files-found: error
